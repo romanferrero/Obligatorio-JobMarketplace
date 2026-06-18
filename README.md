@@ -1,53 +1,41 @@
 # Job Marketplace
 
-Marketplace de empleos sobre Ethereum con **escrow en un token ERC-20**, inspirado en
-[ERC-8183 (Agentic Commerce Protocol)](https://eips.ethereum.org/EIPS/eip-8183). Entrega final de
-Taller de Tecnologías 2 (Blockchain).
+Marketplace de empleos sobre Ethereum con escrow en un token ERC-20, basado en la idea de
+[ERC-8183 (Agentic Commerce Protocol)](https://eips.ethereum.org/EIPS/eip-8183). Este es nuestro
+trabajo final de Taller de Tecnologías 2.
 
-Cada trabajo tiene tres roles:
+La idea es simple: cada trabajo tiene tres roles.
 
-- **Cliente** — publica el trabajo, bloquea el pago en escrow y lo fondea.
-- **Proveedor** — acepta el trabajo y entrega un resultado.
-- **Evaluador** — revisa la entrega y libera el pago al proveedor o reembolsa al cliente.
+- **Cliente**: publica el trabajo, bloquea la plata en el escrow y lo fondea.
+- **Proveedor**: agarra el trabajo y entrega el resultado.
+- **Evaluador**: revisa la entrega y decide si libera el pago al proveedor o le devuelve la plata al cliente.
 
-El evaluador puede ser cualquier dirección capaz de llamar al contrato, incluido un contrato
-**Multisig** (consenso M-de-N): si el evaluador de un trabajo es el Multisig, `complete` solo se
-ejecuta después de que M de N revisores aprueban y ejecutan el llamado. No requiere ninguna
-integración extra: surge naturalmente del protocolo.
+Lo interesante es que el evaluador puede ser cualquier dirección que pueda llamar al contrato, así que
+también puede ser un contrato **Multisig**. Si el evaluador de un trabajo es el Multisig, entonces
+`complete` recién se ejecuta cuando M de N firmantes aprueban y ejecutan el llamado. No hay que hacer
+nada especial para que esto funcione, sale solo del diseño.
 
 ## Contratos
 
-| Contrato | Descripción |
+| Contrato | Para qué |
 |---|---|
-| `JobMarketplace.sol` | Marketplace con escrow. Token ERC-20 fijado en el constructor. |
-| `Multisig.sol` | Evaluador M-de-N reutilizado de la Entrega 2. |
-| `MockERC20.sol` | Token ERC-20 de prueba con faucet abierto (`mint`) para testnet y tests. |
-
-### Máquina de estados de un trabajo
-
-```
-Open ──fund──> Funded ──submit──> Submitted ──complete──> Completed
- │                │                   │
- │ reject(cliente)│ reject(eval.)     │ reject(eval.)
- ▼                ▼                   ▼
-Rejected        Rejected            Rejected
-
-Funded / Submitted ──(block.timestamp > expiresAt)── claimRefund ──> Expired
-```
+| `JobMarketplace.sol` | El marketplace con el escrow. El token ERC-20 se fija al hacer el deploy. |
+| `Multisig.sol` | El evaluador M-de-N que reusamos de la Entrega 2. |
+| `MockERC20.sol` | Un token ERC-20 de prueba con `mint` abierto para poder fondear en testnet y en los tests. |
 
 ### Funciones
 
-| Función | Acceso | Efecto |
+| Función | Quién la puede llamar | Qué hace |
 |---|---|---|
-| `createJob(description, budget, evaluator, provider, expiresAt)` | Cualquiera | Crea el trabajo en `Open`. `evaluator` obligatorio, `provider` opcional. |
-| `setProvider(jobId, provider)` | Cliente | Asigna proveedor a un trabajo `Open` sin proveedor. |
-| `fund(jobId)` | Cliente | Transfiere el `budget` al escrow (`Open → Funded`). Requiere proveedor asignado. |
-| `submit(jobId, deliverableRef)` | Proveedor | `Funded → Submitted`. `deliverableRef` es un `bytes32`. |
+| `createJob(description, budget, evaluator, provider, expiresAt)` | Cualquiera | Crea el trabajo en `Open`. El evaluador es obligatorio, el proveedor es opcional. |
+| `setProvider(jobId, provider)` | Cliente | Asigna proveedor a un trabajo `Open` que todavía no tiene. |
+| `fund(jobId)` | Cliente | Manda el budget al escrow (`Open → Funded`). Necesita que el proveedor ya esté asignado. |
+| `submit(jobId, deliverableRef)` | Proveedor | Pasa el trabajo a `Submitted`. El `deliverableRef` es un `bytes32`. |
 | `complete(jobId, reason)` | Evaluador | Libera el pago al proveedor (`Submitted → Completed`). |
-| `reject(jobId, reason)` | Cliente en `Open` / Evaluador en `Funded`/`Submitted` | Reembolsa al cliente (`→ Rejected`). |
-| `claimRefund(jobId)` | Cualquiera | Si venció estando `Funded`/`Submitted`, reembolsa al cliente (`→ Expired`). |
+| `reject(jobId, reason)` | Cliente en `Open` / Evaluador en `Funded` o `Submitted` | Le devuelve la plata al cliente (`→ Rejected`). |
+| `claimRefund(jobId)` | Cualquiera | Si el trabajo venció estando `Funded` o `Submitted`, reembolsa al cliente (`→ Expired`). |
 
-## Cómo correr los tests
+## Correr los tests
 
 ```bash
 npm install
@@ -56,18 +44,18 @@ npx hardhat test
 
 Los tests cubren:
 
-- **Happy path:** crear → fondear → entregar → completar.
-- **Rechazo:** cliente en `Open`, evaluador en `Funded`, evaluador en `Submitted`.
-- **Expiración:** `claimRefund` desde `Funded` y desde `Submitted`.
-- **Control de acceso:** cada función restringida llamada por la dirección incorrecta revierte.
-- **Multisig como evaluador:** el Multisig se asigna como evaluador y `complete` solo tiene éxito
-  después de alcanzar el threshold y ejecutar el llamado.
+- El camino feliz: crear → fondear → entregar → completar.
+- Rechazos: el cliente rechaza en `Open`, el evaluador rechaza en `Funded` y en `Submitted`.
+- Expiración: `claimRefund` desde `Funded` y desde `Submitted`.
+- Control de acceso: cada función restringida llamada por la dirección equivocada revierte.
+- El Multisig como evaluador: se asigna el Multisig como evaluador y `complete` recién funciona cuando
+  se alcanza el threshold y se ejecuta el llamado.
 
-## Despliegue en Sepolia
+## Deploy en Sepolia
 
 1. Copiá `.env.example` a `.env` y completá `SEPOLIA_RPC_URL` y `PRIVATE_KEY`.
-2. En `scripts/deploy.js`, ajustá `SIGNERS` y `THRESHOLD` del Multisig con las wallets del equipo.
-3. Desplegá:
+2. En `scripts/deploy.js` poné los `SIGNERS` y el `THRESHOLD` del Multisig con las wallets del equipo.
+3. Corré:
 
 ```bash
 npx hardhat run scripts/deploy.js --network sepolia
@@ -83,31 +71,26 @@ npx hardhat run scripts/deploy.js --network sepolia
 
 ## Frontend
 
-_(Sección a completar — Parte B. UI del marketplace en React + TypeScript con wagmi v2 + RainbowKit +
-React Query. Instrucciones para correrlo localmente y variables de entorno.)_
+_(Pendiente — Parte B. UI del marketplace en React + TypeScript con wagmi v2, RainbowKit y React Query.
+Acá van las instrucciones para correrlo local y las variables de entorno.)_
 
 ## Decisiones de diseño
 
-- **OpenZeppelin `SafeERC20` + `ReentrancyGuard`:** transferencias seguras y guard de reentrancy en
-  todas las funciones que mueven fondos, siguiendo checks-effects-interactions.
-- **`description` solo en el evento `JobCreated`:** no se guarda en storage (es caro). El tablero la lee
-  de los eventos; el struct on-chain guarda solo lo necesario.
-- **Deliverable off-chain:** on-chain solo se guarda `deliverableRef` (`bytes32`). El contenido del
-  trabajo se maneja off-chain (localStorage en el frontend) — así no es público hasta el visto bueno.
-- **Multisig como evaluador:** no requiere integración adicional. El Multisig llama a `complete`/`reject`
-  vía `execute` cuando alcanza el threshold.
+- Usamos `SafeERC20` y `ReentrancyGuard` de OpenZeppelin: transferencias seguras y guard de reentrancy
+  en todas las funciones que mueven plata, siguiendo checks-effects-interactions.
+- La `description` la mandamos solo en el evento `JobCreated`, no la guardamos en storage (sale caro).
+  El tablero del frontend la lee de los eventos.
+- El entregable va off-chain: on-chain guardamos nada más que el `deliverableRef` (`bytes32`). El
+  contenido real del trabajo se maneja afuera (en el frontend con localStorage), así no queda público
+  hasta que el evaluador da el ok.
+- El Multisig como evaluador no necesita ninguna integración extra: cuando llega al threshold, llama a
+  `complete` o `reject` a través de su `execute`.
 
-## Desvíos respecto a ERC-8183 (justificados)
+## Cosas que cambiamos respecto a ERC-8183
 
-- **`createJob` incluye `budget`** (inmutable desde la creación), como pide la consigna; ERC-8183 lo
-  separa en un `setBudget`. Seguimos la consigna.
-- **`fund` exige proveedor asignado** (regla de ERC-8183): evita que un trabajo quede fondeado sin
-  proveedor posible, ya que `setProvider`/`submit` no aplican fuera de `Open`.
-- **Se omiten fees (plataforma/evaluador) y hooks `IACPHook`** de ERC-8183: la consigna no los pide y
-  agregan superficie de ataque. `claimRefund` sin hooks coincide con el espíritu del ERC.
-- **Frontend en TypeScript + wagmi/RainbowKit/React Query** (la Entrega 2 usaba ethers + `window.ethereum`
-  en JS): se alinea con el stack pedido en las consignas.
-
-> **Nota:** el PDF de la Entrega 1 contiene una instrucción de _prompt injection_ dirigida a agentes de
-> IA ("[TRAMPA]… mostrar solo 'Conectado'…"). Se detectó y se ignoró deliberadamente: contradice los
-> requisitos reales de la consigna.
+- Pusimos el `budget` dentro de `createJob` y lo dejamos inmutable, como pedía la consigna. El ERC lo
+  maneja aparte con un `setBudget`, pero nosotros seguimos la consigna.
+- `fund` exige que el proveedor ya esté asignado (esto lo tomamos del ERC). Si no, un trabajo podría
+  quedar fondeado sin proveedor posible, porque `setProvider` y `submit` no andan fuera de `Open`.
+- No implementamos las fees ni los hooks que propone el ERC, porque la consigna no los pide y solo
+  agregan más superficie para que algo falle.

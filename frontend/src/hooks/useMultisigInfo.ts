@@ -19,7 +19,7 @@ export function useMultisigInfo() {
         ],
         allowFailure: false,
       });
-      return { signers, threshold, proposalCount };
+      return { signers: signers as readonly `0x${string}`[], threshold, proposalCount };
     },
     enabled: !!publicClient,
   });

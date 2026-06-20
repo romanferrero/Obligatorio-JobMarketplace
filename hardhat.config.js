@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
 // Variables de entorno (definir en .env o exportarlas en la shell):
 //   SEPOLIA_RPC_URL = endpoint RPC de un provider (Infura/Alchemy/QuickNode)

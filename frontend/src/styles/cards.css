@@ -1,0 +1,130 @@
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.card h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.account-card .account-value {
+  font-size: 18px;
+  margin: 0;
+}
+
+.pulse {
+  color: var(--accent);
+}
+
+.job-card {
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.job-card:hover {
+  border-color: var(--accent);
+}
+
+.job-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.job-card-id {
+  font-family: "Space Mono", monospace;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.job-card-description {
+  margin: 0 0 12px;
+  font-size: 14px;
+  min-height: 38px;
+}
+
+.job-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.address-text {
+  cursor: pointer;
+}
+
+.detail-fields dl {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 10px 14px;
+  margin: 0;
+}
+
+.detail-fields dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.detail-fields dd {
+  margin: 0;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.action-card {
+  margin-bottom: 14px;
+}
+
+.action-card h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.empty-state {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+.pill {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 700;
+  padding: 1px 9px;
+  border-radius: 6px;
+}
+
+.signer-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.proposals {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.proposal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.proposal-actions .btn {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 12px;
+}

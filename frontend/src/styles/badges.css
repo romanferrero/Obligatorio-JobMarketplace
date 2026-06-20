@@ -1,0 +1,54 @@
+.status-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* JobStatus: Open=0, Funded=1, Submitted=2, Completed=3, Rejected=4, Expired=5 */
+.status-badge.s0 {
+  background: rgba(74, 163, 223, 0.15);
+  color: var(--info);
+}
+
+.status-badge.s1 {
+  background: rgba(240, 180, 41, 0.15);
+  color: var(--warn);
+}
+
+.status-badge.s2 {
+  background: rgba(240, 180, 41, 0.25);
+  color: var(--warn);
+}
+
+.status-badge.s3 {
+  background: rgba(61, 220, 151, 0.15);
+  color: var(--accent);
+}
+
+.status-badge.s4 {
+  background: rgba(239, 83, 80, 0.15);
+  color: #ff8a87;
+}
+
+.status-badge.s5 {
+  background: #2a3440;
+  color: var(--muted);
+}
+
+/* Multisig Proposal Status: Pending=0, Executed=1, Cancelled=2 */
+.status-badge.ms0 {
+  background: rgba(240, 180, 41, 0.15);
+  color: var(--warn);
+}
+
+.status-badge.ms1 {
+  background: rgba(61, 220, 151, 0.15);
+  color: var(--accent);
+}
+
+.status-badge.ms2 {
+  background: #2a3440;
+  color: var(--muted);
+}

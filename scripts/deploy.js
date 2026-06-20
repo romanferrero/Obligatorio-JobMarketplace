@@ -12,10 +12,11 @@ const hre = require("hardhat");
 // ---------------------------------------------------------------------------
 
 // CONFIGURÁ ACÁ los signers y el threshold del Multisig evaluador.
+// Wallets signers del equipo (mismas de la Entrega 2).
 const SIGNERS = [
-  "0x0000000000000000000000000000000000000001",
-  "0x0000000000000000000000000000000000000002",
-  "0x0000000000000000000000000000000000000003",
+  "0x950C43E870C64e0801b77E3Ad3871a6Ef42084DD",
+  "0x21aB431ac5767Bb87eeF568a8Eac6617e0D12c15",
+  "0x487ADb41Bed30bdbA47833Bd1560b6b2F0861cf7",
 ];
 const THRESHOLD = 2;
 
@@ -58,10 +59,16 @@ async function main() {
   const marketplaceAddress = await marketplace.getAddress();
   console.log("  JobMarketplace:", marketplaceAddress);
 
+  // Bloque del deploy de JobMarketplace: el frontend lo usa como DEPLOY_BLOCK
+  // (fromBlock para leer el historial de eventos JobCreated sin escanear desde 0).
+  const deployReceipt = await marketplace.deploymentTransaction().wait();
+  const deployBlock = deployReceipt.blockNumber;
+
   console.log("\n✅ Deploy completo. Guardá estas direcciones en el README y en frontend/src/config.ts:");
   console.log("  MockERC20:      ", tokenAddress);
   console.log("  Multisig:       ", multisigAddress);
   console.log("  JobMarketplace: ", marketplaceAddress);
+  console.log("  DEPLOY_BLOCK (JobMarketplace):", deployBlock);
 }
 
 main().catch((error) => {

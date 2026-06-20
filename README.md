@@ -65,9 +65,9 @@ npx hardhat run scripts/deploy.js --network sepolia
 
 | Contrato | Dirección |
 |---|---|
-| `JobMarketplace` | _(pendiente de deploy)_ |
-| `Multisig` | _(pendiente de deploy)_ |
-| `MockERC20` | _(pendiente de deploy)_ |
+| `JobMarketplace` | [`0x539921fD1B45D91bE223233cB5212f1C85c3A2e9`](https://sepolia.etherscan.io/address/0x539921fD1B45D91bE223233cB5212f1C85c3A2e9) |
+| `Multisig` | [`0x02BE7B5850188DAD378A6D300CCE543F0a07EFB5`](https://sepolia.etherscan.io/address/0x02BE7B5850188DAD378A6D300CCE543F0a07EFB5) |
+| `MockERC20` | [`0xfD80936c7284167a72B5Bc9cff57A04F96D6293d`](https://sepolia.etherscan.io/address/0xfD80936c7284167a72B5Bc9cff57A04F96D6293d) |
 
 ## Frontend
 

@@ -5,16 +5,16 @@
 export const SEPOLIA_CHAIN_ID = 11155111;
 
 export const ADDRESSES = {
-  jobMarketplace: "0x0000000000000000000000000000000000000000",
-  multisig: "0x0000000000000000000000000000000000000000",
-  mockErc20: "0x0000000000000000000000000000000000000000",
+  jobMarketplace: "0x539921fD1B45D91bE223233cB5212f1C85c3A2e9",
+  multisig: "0x02BE7B5850188DAD378A6D300CCE543F0a07EFB5",
+  mockErc20: "0xfD80936c7284167a72B5Bc9cff57A04F96D6293d",
 } as const;
 
 // Bloque en el que se desplegó JobMarketplace en Sepolia. Sirve como `fromBlock`
 // para leer el historial de eventos `JobCreated` sin escanear toda la chain.
 // Completar con el número de bloque que imprime el deploy (recibo de la tx de
 // deploy de JobMarketplace, visible también en Etherscan).
-export const DEPLOY_BLOCK = 0n;
+export const DEPLOY_BLOCK = 11099390n;
 
 // Token de prueba #2 para el Panel de Cuenta (requerimiento de la Entrega 1: dos
 // tokens ERC-20 en Sepolia). El token #1 es nuestro propio MockERC20 (ADDRESSES.mockErc20).
